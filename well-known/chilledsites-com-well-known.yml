@@ -1,0 +1,152 @@
+generated: '2026-09-19'
+method: probed
+source: live probes of /.well-known/ on every ChilledSites host known to the record
+summary: >-
+  One real document is served, on the apex host: the A2A agent card at /.well-known/agent-card.json (and,
+  byte-identical, at the legacy /.well-known/agent.json). It is credited through the AgentCard pointer and
+  a2a/chilledsites-com-a2a.yml. Nothing else on the closed list is served anywhere — no security.txt, no
+  OIDC discovery, no RFC 8414 or RFC 9728 OAuth metadata (on the primary host OR on the API/MCP/A2A host
+  api.chilledsites.com), no api-catalog, no ai-plugin.json, no ucp/acp/aauth, no apis.json.
+pointer_basis: >-
+  NO WellKnown pointer and NO SecurityTxt pointer are emitted. WellKnown feeds well_known_catalog, which
+  credits an API catalog / security.txt / protected-resource document; the only served document here is
+  the agent card, which has its own graded pointer (AgentCard). Emitting WellKnown on the strength of the
+  agent card would score a catalog the provider does not publish.
+false_positive_watch: >-
+  chilledsites.com returns a real HTML 404 page (title "Site Not Available | ChilledSites", ~4.3 KB) for
+  unknown paths — a negative-control path 404s, so its 200s are genuine. api.chilledsites.com (Supabase
+  Edge Functions custom domain behind Cloudflare) answers every unrouted path with a JSON 404
+  {"error":"requested path is invalid"}. www.chilledsites.com 308s every path to the apex.
+  mcp.chilledsites.com, docs.chilledsites.com, app.chilledsites.com, status.chilledsites.com and
+  developers.chilledsites.com do not resolve (NXDOMAIN); the MCP and A2A endpoints share api.chilledsites.com.
+hosts:
+- host: https://chilledsites.com
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 200
+    file: chilledsites-com-agent-card.json
+    content_type: application/json; charset=utf-8
+    bytes: 2451
+    note: A2A agent card; canonical copy and grading live in a2a/. Credited via AgentCard, not WellKnown.
+  - path: /.well-known/agent.json
+    status: 200
+    file: chilledsites-com-agent-card.json
+    note: Legacy pre-0.3 path; byte-identical to agent-card.json.
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/api-catalog.json
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/mcp.json
+    status: 404
+    note: The provider's MCP manifest is at the root, /mcp.json (200), not under /.well-known/.
+  - path: /.well-known/chilledsites-negative-control-7f3a9.json
+    status: 404
+    note: Negative control — proves the host does not answer 200 for arbitrary /.well-known/* paths.
+- host: https://www.chilledsites.com
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 308
+    note: Redirects to https://chilledsites.com/.well-known/agent-card.json.
+  - path: /.well-known/security.txt
+    status: 308
+  - path: /.well-known/openid-configuration
+    status: 308
+  - path: /.well-known/oauth-authorization-server
+    status: 308
+  - path: /.well-known/oauth-protected-resource
+    status: 308
+  - path: /.well-known/api-catalog
+    status: 308
+  - path: /.well-known/ai-plugin.json
+    status: 308
+- host: https://api.chilledsites.com
+  role: REST base (/functions/v1/api-v1), hosted MCP endpoint (/functions/v1/chatgpt-mcp) and A2A endpoint (/functions/v1/a2a-agent)
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 404
+    body: '{"error":"requested path is invalid"}'
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    note: No RFC 8414 metadata on the MCP/A2A host — the MCP endpoint is API-key gated with no OAuth discovery.
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    note: No RFC 9728 protected-resource metadata on the resource server.
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/api-catalog.json
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/chilledsites-negative-control-7f3a9.json
+    status: 404
+root_discovery_files:
+  note: Not /.well-known/ documents, but the provider's robots.txt lists them as its discovery surface; recorded here so the picture is complete.
+  items:
+  - path: /llms.txt
+    status: 200
+    saved: llms/chilledsites-com-llms.txt
+  - path: /context.md
+    status: 200
+    saved: llms/chilledsites-com-context.md
+  - path: /agents.md
+    status: 200
+    saved: skills/chilledsites-com-agents.md
+  - path: /AGENTS.md
+    status: 200
+    note: Byte-identical to /agents.md.
+  - path: /mcp.json
+    status: 200
+    saved: mcp/chilledsites-com-mcp.json
+  - path: /agent-meta.json
+    status: 200
+    saved: llms/chilledsites-com-agent-meta.json
+  - path: /skill.md
+    status: 200
+    soft_404: true
+    note: >-
+      Advertised by llms.txt, /for-agents, /developer-api and robots.txt as the agent setup guide, but the
+      200 body is the platform's "This site isn't live yet — The website SKILL.md hasn't been published"
+      page (the tenant-not-found template). It is a dead pointer the provider publishes about itself; NOT
+      saved and NOT wired.
+  - path: /llms-full.txt
+    status: 404

@@ -1,0 +1,32 @@
+{
+  "name": "chilledsites",
+  "description": "AI website, image, and video generation. Build, edit, and deploy websites programmatically.",
+  "version": "1.0.0",
+  "endpoint": "https://api.chilledsites.com/functions/v1/chatgpt-mcp",
+  "protocol": "mcp-http",
+  "npm_package": "@chilledsites/mcp-server",
+  "install": "npx -y @chilledsites/mcp-server",
+  "auth": {
+    "type": "apiKey",
+    "headers": {
+      "X-API-Key": "Your API key",
+      "X-API-Secret": "Your API secret"
+    },
+    "signup": "https://api.chilledsites.com/functions/v1/agent-signup"
+  },
+  "tools": [
+    { "name": "generate_website", "description": "Generate a website from a text prompt", "scope": "write" },
+    { "name": "create_website_from_code", "description": "Upload custom HTML/CSS/JS code", "scope": "write" },
+    { "name": "list_websites", "description": "List all websites for the user", "scope": "read" },
+    { "name": "get_website", "description": "Get website details including code", "scope": "read" },
+    { "name": "update_website", "description": "Update website code or metadata", "scope": "write" },
+    { "name": "delete_website", "description": "Permanently delete a website", "scope": "delete" },
+    { "name": "deploy_website", "description": "Deploy website to live URL", "scope": "write" },
+    { "name": "get_token_balance", "description": "Check token balance", "scope": "read" },
+    { "name": "generate_image", "description": "Generate AI image from prompt", "scope": "write" },
+    { "name": "generate_video", "description": "Generate AI video from prompt", "scope": "write" },
+    { "name": "generate_ad", "description": "Generate ad copy for social platforms", "scope": "write" },
+    { "name": "list_ad_templates", "description": "List available ad templates", "scope": "read" },
+    { "name": "get_ad_templates_by_platform", "description": "Get ad templates for a specific platform", "scope": "read" }
+  ]
+}

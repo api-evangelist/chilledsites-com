@@ -1,0 +1,213 @@
+generated: '2026-09-19'
+method: searched
+status: published
+source: https://chilledsites.com/mcp.json
+sources:
+- url: https://chilledsites.com/mcp.json
+  note: Provider-published MCP manifest (13 tools, endpoint, protocol mcp-http, npm package). Saved verbatim as mcp/chilledsites-com-mcp.json.
+- url: https://registry.npmjs.org/@chilledsites/mcp-server
+  note: npm registry metadata — latest 1.0.6 published 2025-12-03, author "ChilledSites", homepage https://chilledsites.com, repository github.com/paulgosnell/chilledsites-v3 (mcp-server/), which is private (GitHub API 404).
+- url: https://registry.npmjs.org/@chilledsites/mcp-server/-/mcp-server-1.0.6.tgz
+  note: The published tarball ships src/index.ts. The 16 tool definitions with their full inputSchema were read from it and saved as mcp/chilledsites-com-mcp-tools.json — a tools/list equivalent taken from the provider's own shipped code, not authored here.
+- url: https://chilledsites.com/agent-meta.json
+  note: schema.org SoftwareApplication document carrying agent.mcpEndpoint and agent.npmPackage; corroborates the endpoint.
+- url: https://chilledsites.com/developers
+  note: Human developer page — Claude Desktop config, `claude mcp add chilledsites -- npx -y @chilledsites/mcp-server`, "13 tools".
+- url: https://chilledsites.com/docs/mcp-setup
+  note: Step-by-step MCP setup guide for Claude Desktop / Claude Code.
+deployment:
+  mode: both
+  endpoint: https://api.chilledsites.com/functions/v1/chatgpt-mcp
+  install: npx -y @chilledsites/mcp-server
+  package: https://www.npmjs.com/package/@chilledsites/mcp-server
+  auth: api-key
+  verified: probed
+  probe:
+    endpoint_get:
+      url: https://api.chilledsites.com/functions/v1/chatgpt-mcp
+      method: GET
+      http_status: 401
+      response: '{"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}'
+    tools_list:
+      url: https://api.chilledsites.com/functions/v1/chatgpt-mcp
+      method: POST
+      body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+      headers: 'Content-Type: application/json; Accept: application/json, text/event-stream'
+      http_status: 401
+      response: '{"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}'
+    initialize:
+      method: POST
+      http_status: 401
+      response: '{"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}'
+    verdict: >-
+      The hosted endpoint exists and is the provider's own (a Supabase Edge Function on api.chilledsites.com,
+      access-control-allow-headers: authorization, x-client-info, apikey), but tools/list is auth-gated at the
+      gateway: every anonymous request is rejected for lack of an Authorization header before the MCP
+      handler runs. The live tool surface therefore could not be enumerated anonymously; the tool list below
+      comes from the shipped npm package, which the provider states exposes the same tools. Discovery
+      metadata for the endpoint (/.well-known/oauth-protected-resource, /.well-known/oauth-authorization-server)
+      is not served on api.chilledsites.com or chilledsites.com (see well-known/).
+  endpoint_name_note: >-
+    The function is named chatgpt-mcp (it was evidently built for ChatGPT's MCP connector); mcp.json labels
+    the protocol "mcp-http". No SSE URL is published.
+server:
+  name: chilledsites
+  version: 1.0.0
+  transport: both
+  url: https://api.chilledsites.com/functions/v1/chatgpt-mcp
+  stdio:
+    command: npx
+    args: [-y, '@chilledsites/mcp-server']
+    bin: chilledsites-mcp
+    env:
+      CHILLEDSITES_API_KEY: required — API key (cs_live_ prefix) from Settings > API Keys, or from POST /functions/v1/agent-signup
+      CHILLEDSITES_API_SECRET: required — API secret (cs_secret_ prefix); the server exits with an error if either variable is missing
+      CHILLEDSITES_API_URL: optional — overrides the REST base, default https://api.chilledsites.com/functions/v1/api-v1
+    sdk: '@modelcontextprotocol/sdk ^0.5.0'
+    node: '>=18.0.0'
+    license: MIT
+  rest_base: https://api.chilledsites.com/functions/v1/api-v1
+  clients_named: [Claude Desktop, Claude Code, ChatGPT, Cursor, OpenClaw]
+auth:
+  methods: [apikey]
+  apikey:
+    headers: [X-API-Key, X-API-Secret]
+    signup: https://api.chilledsites.com/functions/v1/agent-signup
+    note: The stdio server forwards both headers to the REST base on every call; the hosted endpoint additionally requires an Authorization header at the Supabase gateway (observed 401), which no provider document states.
+tool_count: 16
+tool_count_note: >-
+  The provider's mcp.json, agent-meta.json, agents.md, llms.txt and /developers page all say 13 tools. The
+  published package v1.0.6 registers 16: the 13 named everywhere plus generate_ad_image, generate_ad_video and
+  generate_complete_ad. The three extra tools are recorded below; the discrepancy is the provider's, not ours.
+tools_schema_file: mcp/chilledsites-com-mcp-tools.json
+tools:
+- name: generate_website
+  category: websites
+  scope: write
+  description: Generate a new website from a text prompt (types website, landing, pwa, react, dashboard, portfolio). Consumes tokens.
+  required: [prompt]
+  params: [prompt, agentType, creativeBrief, designSelections]
+  rest_binding: POST /v1/generate
+- name: create_website_from_code
+  category: websites
+  scope: write
+  description: Upload custom HTML/CSS/JS as a new website (paid account required; unpaid keys get 402).
+  required: [title, html_code]
+  params: [title, html_code, css_code, js_code, meta_description, agentType]
+  rest_binding: POST /v1/websites/upload
+- name: list_websites
+  category: websites
+  scope: read
+  description: List all websites for the authenticated user.
+  required: []
+  params: []
+  rest_binding: GET /v1/websites
+- name: get_website
+  category: websites
+  scope: read
+  description: Get a website including its HTML, CSS and JavaScript.
+  required: [website_id]
+  params: [website_id]
+  rest_binding: GET /v1/websites/{website_id}
+- name: update_website
+  category: websites
+  scope: write
+  description: Update a website's code or metadata; only supplied fields change.
+  required: [website_id]
+  params: [website_id, title, meta_description, html_code, css_code, js_code, metadata]
+  rest_binding: PUT /v1/websites/{website_id}
+- name: delete_website
+  category: websites
+  scope: delete
+  description: Permanently delete a website. The provider states this cannot be undone.
+  required: [website_id]
+  params: [website_id]
+  rest_binding: DELETE /v1/websites/{website_id}
+- name: deploy_website
+  category: websites
+  scope: write
+  description: Deploy a website to a .chilledsites.com subdomain; returns the live URL.
+  required: [website_id]
+  params: [website_id, subdomain]
+  rest_binding: POST /v1/websites/{website_id}/deploy
+- name: get_token_balance
+  category: account
+  scope: read
+  description: Current token balance, total purchased, total used.
+  required: []
+  params: []
+  rest_binding: GET /v1/user/tokens
+- name: generate_image
+  category: media
+  scope: write
+  description: Generate an image (Gemini 2.5 Flash / Pro, Imagen 3, DALL-E 3 per the tool description). Consumes tokens.
+  required: [prompt]
+  params: [prompt, model, style, aspectRatio, negativePrompt]
+  rest_binding: POST /v1/generate/image
+- name: generate_video
+  category: media
+  scope: write
+  description: Generate a 6-10 second video (Veo 3.1 per the tool description). Consumes tokens; 2-5 minutes.
+  required: [prompt]
+  params: [prompt, aspectRatio, duration, negativePrompt, referenceImages]
+  rest_binding: POST /v1/generate/video
+- name: generate_ad
+  category: ads
+  scope: write
+  description: Generate ad copy for Facebook, Instagram, Google Ads, LinkedIn or Twitter/X.
+  required: [prompt, platform, format]
+  params: [prompt, platform, format, targetAudience, keywords, tone]
+  rest_binding: POST /v1/ads/generate
+- name: list_ad_templates
+  category: ads
+  scope: read
+  description: List ad templates across platforms with dimensions and character limits.
+  required: []
+  params: []
+  rest_binding: GET /v1/ads/templates
+- name: get_ad_templates_by_platform
+  category: ads
+  scope: read
+  description: Ad templates for one platform.
+  required: [platform]
+  params: [platform]
+  rest_binding: GET /v1/ads/templates/{platform}
+- name: generate_ad_image
+  category: ads
+  scope: write
+  description: Generate an advertising image (Imagen 3) sized for a platform. NOT listed in any provider document; present in the shipped package.
+  required: [prompt]
+  params: [prompt, platform, format, aspectRatio]
+  rest_binding: POST /v1/ads/images/generate
+- name: generate_ad_video
+  category: ads
+  scope: write
+  description: Generate an advertising video (Veo); returns an operation id. NOT listed in any provider document; present in the shipped package.
+  required: [prompt]
+  params: [prompt, platform, format, aspectRatio, duration]
+  rest_binding: POST /v1/ads/videos/generate
+- name: generate_complete_ad
+  category: ads
+  scope: write
+  description: Copy + image + optional video in one call. NOT listed in any provider document; present in the shipped package.
+  required: [prompt, platform, format]
+  params: [prompt, platform, format, targetAudience, tone, includeImage, includeVideo]
+  rest_binding: POST /v1/ads/complete
+resources:
+- uri: chilledsites://websites
+  mime: application/json
+  rest_binding: GET /v1/websites
+- uri: chilledsites://website/{website_id}/{html|css|js}
+  mime: text/html | text/css | application/javascript
+  rest_binding: GET /v1/websites/{website_id}
+a2a_skill_map:
+  note: The four A2A skills in a2a/chilledsites-com-agent-card.json map by name onto these tools; the A2A responder itself is auth-gated so the mapping is by semantics, not observed.
+  generate-website: [generate_website]
+  edit-website: [update_website]
+  deploy-website: [deploy_website]
+  generate-media: [generate_image, generate_video]
+crosswalk_note: >-
+  No ToolCrosswalk artifact is emitted because the provider publishes no OpenAPI to bind operationIds to.
+  The rest_binding on each tool above is read from the shipped package source and is the authoritative
+  tool-to-REST map; /v1/ads/* and /v1/websites/upload are REST paths that appear only in the package, not
+  in the human API reference at /docs/api.

@@ -1,0 +1,53 @@
+generated: '2026-09-19'
+method: searched
+docs: https://chilledsites.com/docs/api#rate-limits
+limit_count: 4
+summary: >-
+  Rate limits are documented, with X-RateLimit-* headers and a 429 RATE_LIMIT_EXCEEDED envelope, but the
+  provider publishes FOUR mutually inconsistent statements of the numbers across four pages. All four are
+  recorded with their sources; an agent should trust the response headers over any of them.
+headers:
+- name: X-RateLimit-Limit
+  example: '100'
+- name: X-RateLimit-Remaining
+  example: '95'
+- name: X-RateLimit-Reset
+  example: '1635174000'
+  format: unix epoch seconds
+- name: Retry-After
+  documented: false
+headers_note: 'Documented at /docs/api ("Every API response includes rate limit information in the headers"). Not observed: the only anonymous responses obtainable are 401s, which carried no X-RateLimit-* headers.'
+exhaustion:
+  status: 429
+  body: '{"success":false,"error":{"code":"RATE_LIMIT_EXCEEDED","message":"Rate limit exceeded. Try again in 3600 seconds.","details":{"limit":100,"remaining":0,"resetAt":"2026-04-21T15:00:00Z"}}}'
+  source: https://chilledsites.com/docs/api#rate-limits
+limits:
+- source: https://chilledsites.com/docs/api#rate-limits
+  scope: per subscription tier, per hour
+  window: 1 hour
+  tiers:
+    free: {website_generation: 10, read_operations: 1000, write_operations: 500, deploy: 50}
+    pro: {website_generation: 100, read_operations: 10000, write_operations: 5000, deploy: 500}
+    enterprise: {website_generation: unlimited, read_operations: unlimited, write_operations: unlimited, deploy: unlimited}
+  note: The API reference table. Also states per-endpoint "Free Tier 10 generations/hour, Pro Tier 100 generations/hour" under POST /v1/generate. No Enterprise tier exists on the pricing page.
+- source: https://chilledsites.com/agents.md
+  scope: per key, per minute (also repeated in agent-meta.json rateLimits)
+  window: 1 minute
+  limits: {read_operations: 100, generation: 10, deploy: 5}
+- source: https://chilledsites.com/developers
+  scope: per API key
+  window: 1 minute
+  limits: {all_requests: 10}
+  note: 'FAQ: "The API is rate-limited to 10 requests per minute per API key ... contact support for higher limits."'
+- source: https://chilledsites.com/for-agents
+  scope: per key / per account, per day
+  window: 24 hours
+  limits: {website_generations_per_key: 5, checkout_emails_per_account: 3}
+  note: 'FAQ: "Five website generations per key per day, and three checkout emails per account per day. Both exist so a looping agent cannot burn your money or flood your inbox." The checkout-email cap is also stated under Guardrails as "a hard cap of three checkout emails per account per day".'
+token_quotas:
+  note: Separate from rate limits — every generation also debits a token balance (402 when short). See plans/ for the balances per tier and conventions/ for the 402 flow.
+  documented_costs:
+    agents_md: {website_generation: '~5,000 to start, typically 10,000-30,000 on completion', image: '~1,000', video: '~10,000', ad_copy: '~500', website_edit: '1,000-3,000', upload_update_deploy: 'no token charge, but paid account required'}
+    docs_api: {website_generation: '500-1,000 tokens'}
+    mcp_package_tool_descriptions: {generate_image: 'Gemini 2.5 Flash 1500 / Pro 2500 / Imagen 3 3500 / DALL-E 3 ...', generate_video: '8000 (Veo 3.1)'}
+    note: The three sources disagree by an order of magnitude on website generation; recorded verbatim.

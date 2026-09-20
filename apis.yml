@@ -1,18 +1,79 @@
 aid: chilledsites-com
 name: ChilledSites
-description: 'ChilledSites is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  ChilledSites is a UK-built AI website builder (by p0stman) that generates, edits and deploys complete
+  small-business websites from a text prompt, with hosting, custom domains, contact forms, an AI chatbot,
+  reviews and analytics included from GBP 9 a month. It is unusually agent-native for its size: a REST API
+  at api.chilledsites.com (websites CRUD, deploy, image/video/ad generation, token balance) behind a
+  two-header API key, an A2A agent card at /.well-known/agent-card.json, a hosted MCP endpoint plus the
+  @chilledsites/mcp-server npm package (16 tools), agent self-signup with no human step, and a 402
+  token-billing flow that emails the account owner a payment link so an agent can resume after a human
+  pays. Discovery files (llms.txt, context.md, agents.md, mcp.json, agent-meta.json) are published at the
+  domain root. No OpenAPI, status page, changelog or deprecation policy is published.
 url: https://raw.githubusercontent.com/api-evangelist/chilledsites-com/refs/heads/main/apis.yml
+image: https://chilledsites.com/img/logo.svg
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-09-19 (local-v3; was a2a-registry harvest stub)
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
 - Company
-apis: []
+- Website Builder
+- AI
+- No Code
+- Web Hosting
+- Image Generation
+- Video Generation
+- Advertising
+- MCP
+- Agents
+- A2A
+- Small Business
+- United Kingdom
+apis:
+- name: ChilledSites REST API v1
+  description: >-
+    Generate a website from a prompt, upload custom code, list/get/update/delete websites, deploy to a
+    .chilledsites.com subdomain, generate images, videos and ad creative, check the token balance and
+    trigger the email-checkout top-up. JSON envelope on every response (success/data|error/meta), API-key
+    pair in X-API-Key + X-API-Secret, X-RateLimit-* headers, 402 INSUFFICIENT_TOKENS with a machine-readable
+    body when the balance is short. The provider publishes no OpenAPI; the paths are documented in prose at
+    /docs/api and /agents.md and confirmed by the shipped MCP server source. Note the /docs/api page names a
+    base of https://api.chilledsites.com/v1 that returns 404 — the live base is the one recorded here.
+  image: https://chilledsites.com/img/logo.svg
+  humanURL: https://chilledsites.com/docs/api
+  baseURL: https://api.chilledsites.com/functions/v1/api-v1
+  position: Producing
+  tags:
+  - Website Builder
+  - AI
+  - Deployment
+  - Image Generation
+  - Video Generation
+  - Advertising
+  - Agents
+  properties:
+  - type: Documentation
+    url: https://chilledsites.com/docs/api
+  - type: APIReference
+    url: https://chilledsites.com/agents.md
+  - type: Authentication
+    url: authentication/chilledsites-com-authentication.yml
+  - type: RateLimits
+    url: rate-limits/chilledsites-com-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/chilledsites-com-problem-types.yml
+  - type: Conventions
+    url: conventions/chilledsites-com-conventions.yml
+  - type: MCPServer
+    url: mcp/chilledsites-com-mcp.yml
+  - type: Plans
+    url: plans/chilledsites-com-plans-pricing.yml
+  - type: Lifecycle
+    url: lifecycle/chilledsites-com-lifecycle.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -21,3 +82,62 @@ maintainers:
 common:
 - type: Website
   url: https://chilledsites.com/
+- type: DeveloperPortal
+  url: https://chilledsites.com/developers
+- type: Documentation
+  url: https://chilledsites.com/docs/api
+- type: APIReference
+  url: https://chilledsites.com/agents.md
+- type: GettingStarted
+  url: https://chilledsites.com/docs/mcp-setup
+- type: Blog
+  url: https://chilledsites.com/blog
+- type: BlogRSS
+  url: https://chilledsites.com/blog/rss.xml
+- type: Pricing
+  url: https://chilledsites.com/pricing
+- type: SignUp
+  url: https://chilledsites.com/auth?mode=signup
+- type: Login
+  url: https://chilledsites.com/auth?mode=signin
+- type: TermsOfService
+  url: https://chilledsites.com/terms-of-service
+- type: PrivacyPolicy
+  url: https://chilledsites.com/privacy-policy
+- type: CaseStudies
+  url: https://chilledsites.com/case-studies
+- type: Features
+  url: https://chilledsites.com/features
+- type: Twitter
+  url: https://x.com/chilledsites
+- type: LLMsTxt
+  url: llms/chilledsites-com-llms.txt
+- type: AgentCard
+  url: a2a/chilledsites-com-a2a.yml
+- type: MCPServer
+  url: mcp/chilledsites-com-mcp.yml
+- type: Packages
+  url: packages/chilledsites-com-packages.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Authentication
+  url: authentication/chilledsites-com-authentication.yml
+- type: RateLimits
+  url: rate-limits/chilledsites-com-rate-limits.yml
+- type: ErrorCatalog
+  url: errors/chilledsites-com-problem-types.yml
+- type: Conventions
+  url: conventions/chilledsites-com-conventions.yml
+- type: Lifecycle
+  url: lifecycle/chilledsites-com-lifecycle.yml
+- type: Plans
+  url: plans/chilledsites-com-plans-pricing.yml
+- type: RegulatoryPosture
+  url: regulatory/chilledsites-com-regulatory-posture.yml
+- type: DomainSecurity
+  url: security/chilledsites-com-domain-security.yml
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 21
+  pass: local-v3

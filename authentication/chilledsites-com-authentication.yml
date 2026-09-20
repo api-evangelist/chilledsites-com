@@ -1,0 +1,67 @@
+generated: '2026-09-19'
+method: searched
+docs: https://chilledsites.com/docs/api#authentication
+sources:
+- https://chilledsites.com/docs/api
+- https://chilledsites.com/agents.md
+- https://chilledsites.com/context.md
+- https://chilledsites.com/.well-known/agent-card.json
+- https://chilledsites.com/for-agents
+- https://chilledsites.com/developers
+- npm @chilledsites/mcp-server 1.0.6 src/index.ts (the shipped client sends X-API-Key + X-API-Secret)
+note: >-
+  No OpenAPI is published, so this profile is read from the provider's documentation and from the request
+  headers its own shipped MCP server sends. The authoritative scheme is a two-header API-key pair; two
+  older pages describe a Bearer token instead (recorded under disagreements).
+schemes:
+- id: apiKeyPair
+  type: apiKey
+  in: header
+  headers:
+  - name: X-API-Key
+    format: 'cs_live_... (prefix documented in agents.md and /docs/api)'
+  - name: X-API-Secret
+    format: 'cs_secret_... (prefix documented in agents.md and /docs/api)'
+  applies_to: every REST call on https://api.chilledsites.com/functions/v1/api-v1, every MCP tool call (stdio server forwards both headers), and the A2A endpoint per the agent card
+  issuance:
+  - channel: dashboard
+    steps: Sign in > profile avatar > Settings > API Keys tab > Generate New API Key > name + permissions > Create; key and secret are shown once.
+    permissions_at_creation: [Read, Write, Deploy]
+    docs: https://chilledsites.com/docs/api#authentication
+  - channel: agent self-signup
+    endpoint: POST https://api.chilledsites.com/functions/v1/agent-signup
+    content_type: application/json
+    body_fields_documented:
+      agents_md: [agent_name, agent_type, contact_email]
+      for_agents: [email, source]
+      developers: [email, agent_name]
+    returns: '{ api_key, api_secret } immediately; account starts at zero tokens'
+    probe: "GET returned 405 {\"error\":\"Method not allowed\"} with Access-Control-Allow-Methods POST, OPTIONS -- live, POST-only. Not called with POST (it would create an account)."
+    docs: https://chilledsites.com/for-agents
+  gateway_note: >-
+    The hosted MCP endpoint (/functions/v1/chatgpt-mcp) and the A2A endpoint (/functions/v1/a2a-agent)
+    additionally return 401 {"code":"UNAUTHORIZED_NO_AUTH_HEADER"} to any request without an Authorization
+    header — the Supabase Edge Functions gateway check — which no provider document mentions. The REST
+    base (/functions/v1/api-v1) does NOT apply that check: an anonymous request reaches the API and gets
+    the API's own 401 envelope {"success":false,"error":{"code":"UNAUTHORIZED","message":"Invalid or
+    missing API credentials"}}.
+unauthenticated_response:
+  status: 401
+  body: '{"success":false,"error":{"code":"UNAUTHORIZED","message":"Invalid or missing API credentials"},"meta":{"timestamp":"2026-09-20T01:32:42.436Z","version":"v1"}}'
+  observed_on: GET https://api.chilledsites.com/functions/v1/api-v1/v1/websites
+  cors: 'access-control-allow-origin: *; access-control-allow-headers: x-api-key, x-api-secret, content-type, authorization; access-control-allow-methods: GET, POST, PUT, DELETE, OPTIONS'
+authorization:
+  model: per-key permissions chosen at creation (Read, Write, Deploy); 403 FORBIDDEN when a key lacks the permission
+  billing_gate: paid routes (upload, update, deploy, and every generation) additionally require tokens or a paid account — 402 INSUFFICIENT_TOKENS otherwise (see errors/ and conventions/)
+oauth2: none
+openid_connect: none
+mutual_tls: none
+disagreements:
+- page: https://chilledsites.com/developers
+  says: 'Authorization: Bearer YOUR_API_KEY against https://nccnasarzekslweasfpw.supabase.co/functions/v1/api-v1 with an {"action","params"} body'
+  status: >-
+    contradicted by /docs/api, agents.md, the agent card and the shipped MCP server, all of which use the two X-API-* headers and RESTful /v1/* paths. The supabase.co host is the same backend (probed: identical 401 envelope) but the provider's canonical host is api.chilledsites.com.
+- page: https://chilledsites.com/developer-api
+  says: 'Authorization: Bearer YOUR_API_TOKEN against https://chilledsites.com/api/v1/generate'
+  status: >-
+    dead — https://chilledsites.com/api/* returns 404 {"code":"NOT_FOUND","message":"Requested function was not found"}; this is marketing copy for a base that does not exist.

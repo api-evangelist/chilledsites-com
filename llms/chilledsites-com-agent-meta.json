@@ -1,0 +1,90 @@
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ChilledSites",
+  "description": "AI-powered website, image, and video generation. Deploy instantly to .chilledsites.com or custom domains.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Web",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Free",
+      "price": "0",
+      "priceCurrency": "GBP",
+      "description": "1 live site, basic generation"
+    },
+    {
+      "@type": "Offer",
+      "name": "Pro",
+      "price": "29",
+      "priceCurrency": "GBP",
+      "unitText": "YEAR",
+      "description": "3 live sites, 50K tokens, custom domains"
+    },
+    {
+      "@type": "Offer",
+      "name": "Pro+",
+      "price": "49",
+      "priceCurrency": "GBP",
+      "unitText": "YEAR",
+      "description": "10 live sites, 150K tokens, all add-ons"
+    }
+  ],
+  "creator": {
+    "@type": "Organization",
+    "name": "Thrive Venture Labs",
+    "url": "https://thriveventurelabs.com"
+  },
+  "potentialAction": {
+    "@type": "UseAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://api.chilledsites.com/functions/v1/api-v1/v1/generate",
+      "httpMethod": "POST",
+      "contentType": "application/json"
+    }
+  },
+  "documentation": "https://chilledsites.com/agents.md",
+  "keywords": ["website generator", "AI", "deploy", "images", "video", "landing pages", "MCP", "API"],
+  "agent": {
+    "skillFile": "/skill.md",
+    "llmsFile": "/llms.txt",
+    "contextFile": "/context.md",
+    "agentsFile": "/agents.md",
+    "mcpManifest": "/mcp.json",
+    "agentCard": "/.well-known/agent.json",
+    "authType": "apiKey",
+    "authHeaders": ["X-API-Key", "X-API-Secret"],
+    "agentSignup": "https://api.chilledsites.com/functions/v1/agent-signup",
+    "mcpEndpoint": "https://api.chilledsites.com/functions/v1/chatgpt-mcp",
+    "npmPackage": "@chilledsites/mcp-server"
+  },
+  "tools": [
+    { "name": "generate_website", "description": "Generate a website from a text prompt", "scope": "write" },
+    { "name": "create_website_from_code", "description": "Upload custom HTML/CSS/JS", "scope": "write" },
+    { "name": "list_websites", "description": "List all websites", "scope": "read" },
+    { "name": "get_website", "description": "Get website details", "scope": "read" },
+    { "name": "update_website", "description": "Update website code", "scope": "write" },
+    { "name": "delete_website", "description": "Delete a website", "scope": "delete" },
+    { "name": "deploy_website", "description": "Deploy to live URL", "scope": "write" },
+    { "name": "get_token_balance", "description": "Check token balance", "scope": "read" },
+    { "name": "generate_image", "description": "Generate AI image", "scope": "write" },
+    { "name": "generate_video", "description": "Generate AI video", "scope": "write" },
+    { "name": "generate_ad", "description": "Generate ad copy", "scope": "write" },
+    { "name": "list_ad_templates", "description": "List ad templates", "scope": "read" },
+    { "name": "get_ad_templates_by_platform", "description": "Get templates by platform", "scope": "read" }
+  ],
+  "errorCodes": {
+    "400": "Bad request",
+    "401": "Unauthorized",
+    "402": "Insufficient tokens",
+    "404": "Not found",
+    "429": "Rate limited",
+    "500": "Server error"
+  },
+  "rateLimits": {
+    "read": "100/min",
+    "generate": "10/min",
+    "deploy": "5/min"
+  }
+}

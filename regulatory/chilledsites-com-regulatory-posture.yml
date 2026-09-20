@@ -1,0 +1,37 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+signals: {}
+probed:
+- {url: https://chilledsites.com/accessibility, status: 404}
+- {url: https://chilledsites.com/legal, status: 404}
+- {url: https://chilledsites.com/legal/subprocessors, status: 404}
+- {url: https://chilledsites.com/legal/dpa, status: 404}
+- {url: https://chilledsites.com/privacy/requests, status: 404}
+- {url: https://chilledsites.com/security, status: 404}
+- {url: https://chilledsites.com/.well-known/security.txt, status: 404}
+- {url: https://chilledsites.com/privacy-policy, status: 200}
+- {url: https://chilledsites.com/terms-of-service, status: 200}
+- {url: https://chilledsites.com/docs/api, status: 200}
+near_misses:
+  note: Pages that mention a topic without carrying the substance the signal requires. Recorded so the next pass does not re-litigate them; none is wired.
+  data_subject_request:
+    url: https://chilledsites.com/privacy-policy
+    observed: 'Section 5 "Your Rights" lists access, correction, deletion, marketing opt-out and export, with a contact address privacy@chilledsites.com.'
+    why_not: A statement of rights plus a mailbox is not a request mechanism or form; no DSR page, portal or API is published.
+  exit_assistance:
+    url: https://chilledsites.com/terms-of-service
+    observed: '"we will provide a reasonable grace period for data export" (section 10); "data export" listed as a Pro feature in context.md; GET /v1/websites/{id} returns full html/css/js.'
+    why_not: No export documentation page or stated procedure; the API read path is a capability, not a documented exit assistance commitment.
+  age_assurance:
+    url: https://chilledsites.com/terms-of-service
+    observed: '"You must be at least 13 years old to use this service" (section 3).'
+    why_not: An age floor in the terms is not an age-assurance mechanism.
+  ai_transparency:
+    url: https://chilledsites.com/terms-of-service
+    observed: 'Section 7 "AI-Generated Content ... provided as-is"; the privacy policy says prompts are shared with "AI providers for website generation (anonymized data)"; /developers names the models (Claude, Gemini Imagen 3, DALL-E 3, Grok, Veo 2, Sora).'
+    why_not: A liability disclaimer and a model list are not an AI transparency disclosure page; no page describes AI use, limitations or user rights in the sense the signal requires.
+  incident_notification:
+    observed: none — the privacy policy has a one-sentence security clause and no breach-notification commitment.
+  subprocessors:
+    observed: 'Privacy policy names categories ("service providers", "AI providers") but no dated subprocessor list.'

@@ -1,0 +1,165 @@
+generated: '2026-09-19'
+method: probed
+source: https://chilledsites.com/.well-known/agent-card.json
+card:
+  file: a2a/chilledsites-com-agent-card.json
+  sha256: 518428a5c046dd3e98f2a401f82da9f39fea5488cbbf0c32568e5fa7be63b684
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: chilledsites.com
+  also_served_at: /.well-known/agent.json
+  note: >-
+    Served from the apex host (Vercel, last-modified Fri, 18 Sep 2026 18:22:11 GMT, etag
+    226304e8f2e18bdbb3e84c9bd2edca62, access-control-allow-origin: *). The legacy /.well-known/agent.json
+    returns the byte-identical document, so the provider publishes the card at both the 0.3 canonical path
+    and the pre-0.3 path. www.chilledsites.com 308s every path to the apex. A negative-control path
+    (/.well-known/chilledsites-negative-control-7f3a9.json) returns the site's real HTML 404 page, so the
+    200 on agent-card.json is a served document and not an SPA catch-all. The API host the card points at
+    (api.chilledsites.com, a Supabase Edge Functions custom domain behind Cloudflare) does NOT serve the
+    card: /.well-known/agent-card.json there returns a JSON 404 ({"error":"requested path is invalid"}).
+    Ownership is not in question: provider.organization is "ChilledSites" with provider.url
+    https://chilledsites.com, the card's endpoint and signup URL are on api.chilledsites.com, and the
+    provider's own llms.txt, agents.md, mcp.json and agent-meta.json all reference this card by path.
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://chilledsites.com/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json; charset=utf-8
+  body_bytes: 2451
+  body_parses_as: JSON object with AgentCard shape (protocolVersion, name, description, url, provider, version, capabilities, authentication, defaultInputModes, defaultOutputModes, skills)
+  corroborating_probes:
+  - url: https://chilledsites.com/.well-known/agent.json
+    http_status: 200
+    note: Byte-identical to the canonical-path document.
+  - url: https://www.chilledsites.com/.well-known/agent-card.json
+    http_status: 308
+    note: Redirects to https://chilledsites.com/.well-known/agent-card.json.
+  - url: https://api.chilledsites.com/.well-known/agent-card.json
+    http_status: 404
+    note: '{"error":"requested path is invalid"} — the API host does not serve the card.'
+  - url: https://chilledsites.com/.well-known/chilledsites-negative-control-7f3a9.json
+    http_status: 404
+    note: Real HTML 404 page; rules out an SPA catch-all on /.well-known/*.
+  - url: https://api.chilledsites.com/functions/v1/a2a-agent
+    method: GET
+    http_status: 401
+    response: '{"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}'
+    note: >-
+      The declared A2A endpoint sits behind the Supabase Edge Functions gateway, which rejects any request
+      without an Authorization header before the function runs. The card advertises X-API-Key /
+      X-API-Secret headers and says nothing about an Authorization header, so an A2A client following the
+      card alone cannot reach the responder. Nothing was sent to the agent and no account was created.
+  - url: https://api.chilledsites.com/functions/v1/a2a-agent
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"tasks/get","params":{"id":"probe"}}'
+    http_status: 401
+    response: '{"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}'
+    note: Same gateway rejection on POST; the A2A JSON-RPC responder could not be observed anonymously.
+  - url: https://api.chilledsites.com/functions/v1/agent-signup
+    method: GET
+    http_status: 405
+    response: '{"error":"Method not allowed"}'
+    note: >-
+      The card's credentials.signup_url is a live POST-only endpoint (CORS allows POST, OPTIONS). It was
+      NOT called with POST: doing so would create an account under a contact email, which this pipeline
+      does not do.
+  - url: https://a2aregistry.org
+    note: >-
+      The provider entered the harvest backlog from the a2a-registry listing (x-source harvest:a2a-registry).
+      The registry was the lead; the card above was fetched directly from the provider's own host.
+agent_card:
+  name: ChilledSites
+  description: >-
+    AI website, image, and video generation. Build, edit, and deploy websites from text prompts. Supports
+    landing pages, PWAs, portfolios, and dashboards.
+  url: https://api.chilledsites.com/functions/v1/a2a-agent
+  version: 1.0.0
+  protocol_version: 0.3.0
+  preferred_transport: null
+  provider:
+    organization: ChilledSites
+    url: https://chilledsites.com
+  capabilities:
+    streaming: false
+    push_notifications: false
+    state_transition_history: false
+  authentication_legacy_block:
+    schemes: [apiKey]
+    credentials:
+      signup_url: https://api.chilledsites.com/functions/v1/agent-signup
+      headers: [X-API-Key, X-API-Secret]
+  default_input_modes: [text/plain]
+  default_output_modes: [text/plain]
+  security_schemes: null
+  security: null
+  documentation_url: null
+  icon_url: null
+  skill_count: 4
+  skills:
+  - {id: generate-website, name: Generate Website, tags: [website, generation, ai, landing-page]}
+  - {id: edit-website, name: Edit Website, tags: [website, edit, update, code]}
+  - {id: deploy-website, name: Deploy Website, tags: [deploy, hosting, publish]}
+  - {id: generate-media, name: Generate Media, tags: [image, video, media, ai]}
+conformance:
+  spec: A2A 1.0.0
+  grade: near-conformant
+  protocol_version: '0.3.0'
+  preferred_transport: null
+  hard_checks:
+    capabilities_is_object: true
+    protocol_version_present: true
+    skills_is_array: true
+  optional_fields:
+    default_input_modes: true
+    default_output_modes: true
+    preferred_transport: false
+  grade_basis: >-
+    All three hard checks pass: capabilities is an OBJECT (streaming, pushNotifications,
+    stateTransitionHistory), protocolVersion is present at the top level ("0.3.0"), and skills is an ARRAY
+    of four skills each carrying id, name, description, tags, examples, inputModes and outputModes.
+    preferredTransport is absent, so the card is graded near-conformant rather than conformant: an A2A
+    client must assume the default JSONRPC binding for the declared url. defaultInputModes and
+    defaultOutputModes are present.
+  deviations:
+  - field: preferredTransport
+    observed: absent
+    note: Optional in 0.3.0 (defaults to JSONRPC) but it is the discriminator between the two grades here.
+  - field: authentication
+    observed: 'legacy object {schemes: [apiKey], credentials: {signup_url, headers}}'
+    note: >-
+      This is the pre-0.3 AgentAuthentication shape. A2A 0.3.0 and 1.0.0 express auth as securitySchemes +
+      security (OpenAPI-style). A 0.3-aware reader finds no securitySchemes and reads the card as
+      unauthenticated, while the endpoint in fact requires two API-key headers and, at the gateway, an
+      Authorization header the card never mentions.
+  - field: securitySchemes / security
+    observed: absent
+    note: See authentication above; the credential requirement is carried only in the legacy block.
+  - field: protocolVersion / url
+    observed: 0.3.0 top-level pair; no supportedInterfaces[] or additionalInterfaces[]
+    note: Valid for the declared 0.3.0 revision; a reader written against A2A 1.0.0 will not find supportedInterfaces[].protocolBinding.
+  - field: documentationUrl / iconUrl / signatures
+    observed: absent
+    note: >-
+      No documentation link (the provider publishes https://chilledsites.com/agents.md and
+      https://chilledsites.com/docs/api, neither referenced from the card) and no JWS signature block, so
+      authenticity rests on TLS to chilledsites.com.
+  - field: skills[].security
+    observed: absent on every skill
+    note: Optional per-skill field.
+  - field: skills[generate-media].description
+    observed: names Gemini, Imagen 3, DALL-E 3 and Veo 3.1
+    note: >-
+      The provider's llms.txt (2026-06-30) and context.md name Veo 2 and Sora 2 for video, and the shipped
+      MCP package's generate_video tool says Veo 3.1. The card and the prose disagree on the video model;
+      recorded, not graded.
+surface_relationship:
+  note: >-
+    ChilledSites publishes three agent surfaces that project one REST core (see mcp/chilledsites-com-mcp.yml
+    and conventions/chilledsites-com-conventions.yml). A2A: four skills at
+    https://api.chilledsites.com/functions/v1/a2a-agent. MCP: a hosted endpoint at
+    https://api.chilledsites.com/functions/v1/chatgpt-mcp plus the stdio npm package @chilledsites/mcp-server
+    (16 tools in v1.0.6). REST: https://api.chilledsites.com/functions/v1/api-v1 with the /v1/* paths
+    documented at https://chilledsites.com/docs/api and https://chilledsites.com/agents.md. No OpenAPI is
+    published for the REST core, so the crosswalk between the four A2A skills, the 16 MCP tools and the REST
+    paths is recorded by name in the MCP manifest rather than in a ToolCrosswalk artifact.

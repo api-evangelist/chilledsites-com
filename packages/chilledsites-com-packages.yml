@@ -1,0 +1,44 @@
+generated: '2026-09-19'
+method: searched
+source: https://registry.npmjs.org/@chilledsites/mcp-server
+searched:
+- registry: npm
+  query: '@chilledsites/mcp-server; search text "chilledsites"'
+  result: one package
+- registry: pypi
+  query: chilledsites
+  result: 404 — none
+- registry: github
+  query: orgs/chilledsites (404), users/chilledsites (404), search repositories?q=chilledsites (0 results), repos/paulgosnell/chilledsites-v3 (404 — private)
+  result: no public source repository
+- registry: docs
+  query: https://chilledsites.com/developers, /docs/api, /agents.md, /context.md
+  result: no client SDK is published; the code examples are raw fetch/requests calls against the REST base
+packages:
+- name: '@chilledsites/mcp-server'
+  registry: npm
+  kind: mcp-server
+  language: typescript
+  official: true
+  official_basis: npm author "ChilledSites", homepage https://chilledsites.com, referenced by the provider's mcp.json, agent-meta.json, agents.md, llms.txt and /developers page.
+  url: https://www.npmjs.com/package/@chilledsites/mcp-server
+  registry_api: https://registry.npmjs.org/@chilledsites/mcp-server
+  version: 1.0.6
+  published: '2025-12-03'
+  first_published: '2025-10-21'
+  release_history: ['1.0.2 2025-10-21', '1.0.3 2025-10-21', '1.0.4 2025-10-21', '1.0.5 2025-10-21', '1.0.6 2025-12-03']
+  license: MIT
+  bin: chilledsites-mcp
+  install: npx -y @chilledsites/mcp-server
+  repository: https://github.com/paulgosnell/chilledsites-v3 (directory mcp-server; private — GitHub API returns 404)
+  dependencies: {'@modelcontextprotocol/sdk': '^0.5.0'}
+  engines: {node: '>=18.0.0'}
+  tools: 16
+  note: >-
+    This is an MCP server, not a client SDK — it is the stdio half of the provider's MCP deployment (see
+    mcp/chilledsites-com-mcp.yml). No SDKs pointer is emitted because the provider ships no client library
+    in any language. Currency: the last release (2025-12-03) predates the provider's 2026 documentation
+    (llms.txt 2026-06-30, /for-agents 2026-08-07) and the docs still describe 13 tools while the package
+    registers 16, so package and docs have drifted in both directions. The package pins
+    @modelcontextprotocol/sdk ^0.5.0, several major versions behind the current SDK.
+sdk_count: 0

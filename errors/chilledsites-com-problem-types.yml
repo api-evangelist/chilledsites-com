@@ -1,0 +1,80 @@
+generated: '2026-09-19'
+method: searched
+format: json-envelope
+docs: https://chilledsites.com/docs/api#error-codes
+sources:
+- https://chilledsites.com/docs/api
+- https://chilledsites.com/agents.md
+- https://chilledsites.com/for-agents
+- https://chilledsites.com/agent-meta.json
+- observed: GET https://api.chilledsites.com/functions/v1/api-v1/v1/websites (anonymous) -> 401 envelope below
+note: >-
+  Not RFC 9457. Every response — success or error — is a JSON envelope with success, data|error and meta
+  {timestamp, version}. Errors carry error.code (stable SCREAMING_SNAKE string), error.message and
+  error.details. No OpenAPI is published, so this catalog is read from the docs and from one live 401.
+envelope:
+  success: false
+  error:
+    code: string — stable machine code (see problem_types[].code)
+    message: string — human-readable
+    details: object — code-specific (rate-limit counters, token shortfall, checkout pointers)
+  meta:
+    timestamp: ISO 8601
+    version: v1
+  observed_example: '{"success":false,"error":{"code":"UNAUTHORIZED","message":"Invalid or missing API credentials"},"meta":{"timestamp":"2026-09-20T01:32:42.436Z","version":"v1"}}'
+problem_types:
+- code: INVALID_REQUEST
+  status: 400
+  title: Bad request — missing or invalid parameters
+  remediation: Check required fields (e.g. prompt for /v1/generate, title + html_code for /v1/websites/upload).
+- code: UNAUTHORIZED
+  status: 401
+  title: Invalid or missing API credentials
+  remediation: Send both X-API-Key and X-API-Secret; obtain them from Settings > API Keys or POST /functions/v1/agent-signup.
+  observed: true
+- code: FORBIDDEN
+  status: 403
+  title: API key lacks required permissions
+  remediation: Keys carry Read / Write / Deploy permissions chosen at creation; create a key with the needed permission.
+- code: INSUFFICIENT_TOKENS
+  status: 402
+  title: Payment required — insufficient tokens (or unpaid account on upload/update/deploy)
+  machine_readable_body:
+    documented_at: https://chilledsites.com/for-agents
+    example: '{"error":{"code":"INSUFFICIENT_TOKENS","details":{"tokens_required":5000,"tokens_available":0,"checkout_url":"https://chilledsites.com/pricing","email_checkout":{"endpoint":"/v1/checkout/email","method":"POST"},"balance_endpoint":"/v1/user/tokens"}}}'
+    fields:
+      tokens_required: tokens the job needs (balance is checked BEFORE any paid call runs)
+      tokens_available: current balance (agents.md names this field tokens_short)
+      checkout_url: hosted pricing/checkout page for a human
+      email_checkout: 'POST /v1/checkout/email {"tokens_needed": n} emails a hosted Revolut payment link to the account''s registered address only; capped at 3 per account per day'
+      balance_endpoint: GET /v1/user/tokens to poll until the human has paid, then retry
+  remediation: Do not retry blindly. Surface checkout_url to the human or call POST /v1/checkout/email, poll GET /v1/user/tokens, then retry the original call.
+  note: This is the provider's agent-billing mechanism; it is a plain 402 with a JSON body, not x402 (no payment header, no on-chain settlement).
+- code: NOT_FOUND
+  status: 404
+  title: Resource doesn't exist, or website doesn't belong to this user
+  remediation: Verify website_id from GET /v1/websites; 404 is also returned for another user's website (no 403 distinction).
+- code: RATE_LIMIT_EXCEEDED
+  status: 429
+  title: Too many requests
+  details_fields: [limit, remaining, resetAt]
+  remediation: Read X-RateLimit-Reset / details.resetAt and back off; see rate-limits/chilledsites-com-rate-limits.yml.
+- code: INTERNAL_ERROR
+  status: 500
+  title: Server error
+  remediation: 'agents.md: "retry after a moment".'
+gateway_errors:
+  note: Errors from the Supabase Edge Functions gateway, outside the API envelope. Seen on the MCP and A2A functions and on unrouted paths.
+  items:
+  - status: 401
+    body: '{"code":"UNAUTHORIZED_NO_AUTH_HEADER","message":"Missing authorization header"}'
+    where: /functions/v1/chatgpt-mcp, /functions/v1/a2a-agent
+  - status: 404
+    body: '{"code":"NOT_FOUND","message":"Requested function was not found"}'
+    where: any /functions/v1/<unknown> and https://chilledsites.com/api/*
+  - status: 404
+    body: '{"error":"requested path is invalid"}'
+    where: any api.chilledsites.com path outside /functions/v1 and /rest/v1 (including the /v1 base that /docs/api names)
+  - status: 405
+    body: '{"error":"Method not allowed"}'
+    where: GET /functions/v1/agent-signup (POST-only)

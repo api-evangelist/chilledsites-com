@@ -1,0 +1,37 @@
+generated: '2026-09-19'
+method: searched
+sources:
+- https://chilledsites.com/docs/api
+- https://chilledsites.com/terms-of-service
+- https://chilledsites.com/blog/rss.xml
+- https://registry.npmjs.org/@chilledsites/mcp-server
+- probes: https://chilledsites.com/changelog (404), /status (404), status.chilledsites.com (NXDOMAIN)
+versioning:
+  scheme: path-versioned (/v1) with meta.version "v1" echoed on every response
+  current: v1
+  policy_url: null
+  policy_documented: false
+deprecation:
+  policy_url: null
+  policy_documented: false
+  headers: none documented (no Sunset / Deprecation, RFC 8594)
+  deprecated_operations: []
+  note: No Deprecation pointer emitted — nothing is published.
+status_page:
+  url: null
+  note: No status page exists (/status 404, status.chilledsites.com does not resolve). No StatusPage pointer emitted.
+sla:
+  stated: '"We strive to maintain 99.9% uptime but do not guarantee uninterrupted service."'
+  source: https://chilledsites.com/terms-of-service (section 8, last updated March 2, 2026)
+  binding: false
+  discontinuation: '"We reserve the right to modify, suspend, or discontinue any part of the service with reasonable notice."'
+  termination_data_export: '"Upon termination, you will lose access to your websites and data, though we will provide a reasonable grace period for data export."'
+changelog:
+  url: null
+  note: No changelog or release notes page (/changelog 404). The blog (RSS https://chilledsites.com/blog/rss.xml, last build 2026-07-02) is marketing/how-to content, not release notes. No ChangeLog artifact emitted.
+release_signals:
+  npm_mcp_server: '1.0.6 published 2025-12-03 (first release 2025-10-21)'
+  agent_card_last_modified: '2026-09-18 (Last-Modified header)'
+  llms_txt_last_updated: '2026-06-30 (stated in the file)'
+  terms_privacy_last_updated: '2026-03-02'
+  for_agents_page_lastmod: '2026-08-07 (sitemap)'

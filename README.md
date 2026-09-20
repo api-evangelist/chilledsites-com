@@ -64,5 +64,8 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-ChilledSites is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry) and added to the network as a stub for full-pipeline profiling.
+ChilledSites is an AI website builder that generates, edits and deploys small-business websites from a text prompt. This profile was built 2026-09-19 from the provider's public surface: a REST API at `https://api.chilledsites.com/functions/v1/api-v1` (documented in prose at [/docs/api](https://chilledsites.com/docs/api) and [/agents.md](https://chilledsites.com/agents.md); no OpenAPI is published), an A2A agent card at `/.well-known/agent-card.json` (graded near-conformant), a hosted MCP endpoint plus the `@chilledsites/mcp-server` npm package (16 tools), `llms.txt`, `mcp.json`, `context.md` and `agent-meta.json` at the domain root, agent self-signup, and a 402 email-checkout billing flow for agents. Artifacts in this repo are either saved verbatim from those URLs or read from them; each carries its `method:` and `source:`.
+
 - https://chilledsites.com/
+- https://chilledsites.com/developers
+- https://chilledsites.com/for-agents

@@ -1,0 +1,103 @@
+generated: '2026-09-19'
+method: searched
+sources:
+- https://chilledsites.com/docs/api
+- https://chilledsites.com/agents.md
+- https://chilledsites.com/for-agents
+- https://chilledsites.com/context.md
+- npm @chilledsites/mcp-server 1.0.6 src/index.ts
+- observed anonymous responses from https://api.chilledsites.com/functions/v1/api-v1
+summary: >-
+  A small JSON-over-HTTPS REST surface (websites CRUD, deploy, generate, media, ads, token balance) behind a
+  two-header API key, with a consistent success/error envelope, a documented 402 token-billing flow built
+  for agents, and no idempotency, pagination, expansion, request-id or reversibility mechanisms of any kind.
+  No OpenAPI is published; everything below is read from prose docs and the provider's shipped client.
+base_url:
+  canonical: https://api.chilledsites.com/functions/v1/api-v1
+  basis: the default API_BASE_URL in the shipped MCP server, agents.md, context.md, agent-meta.json potentialAction, and /for-agents; the paths below are appended (e.g. .../api-v1/v1/generate)
+  published_but_dead:
+  - url: https://api.chilledsites.com/v1
+    where: https://chilledsites.com/docs/api ("Base URL")
+    probe: GET /v1/websites -> 404 {"error":"requested path is invalid"}
+  - url: https://chilledsites.com/api/v1
+    where: https://chilledsites.com/developer-api
+    probe: -> 404 {"code":"NOT_FOUND","message":"Requested function was not found"}
+  - url: https://nccnasarzekslweasfpw.supabase.co/functions/v1/api-v1
+    where: https://chilledsites.com/developers
+    probe: live (identical 401 envelope) — the raw Supabase project host behind the custom domain; works but is not the canonical name
+auth:
+  style: api-key pair in headers (X-API-Key + X-API-Secret)
+  ref: authentication/chilledsites-com-authentication.yml
+content_type: application/json on requests and responses
+envelope:
+  success: '{"success":true,"data":{...},"meta":{"timestamp":"<ISO8601>","version":"v1"}}'
+  error: '{"success":false,"error":{"code":"<CODE>","message":"...","details":{}},"meta":{...}}'
+  ref: errors/chilledsites-com-problem-types.yml
+versioning:
+  style: path segment /v1 plus meta.version "v1" in every response
+  policy_documented: false
+  ref: lifecycle/chilledsites-com-lifecycle.yml
+idempotency:
+  coverage: none
+  header: null
+  scope: []
+  note: >-
+    No Idempotency-Key or equivalent is documented on any write (POST /v1/generate, POST /v1/websites/upload,
+    PUT /v1/websites/{id}, POST /v1/websites/{id}/deploy, POST /v1/generate/image|video, POST /v1/ads/*,
+    POST /v1/checkout/email). A retried generate creates a second website and debits tokens again. The only
+    replay protection the provider publishes is economic: the balance check before each paid call, the
+    5-generations-per-key-per-day cap and the 3-checkout-emails-per-account-per-day cap (/for-agents).
+    No Idempotency pointer is emitted.
+reversibility:
+  grade: none
+  write_surface:
+  - operation: DELETE /v1/websites/{website_id}
+    reversal: none
+    window: null
+    docs: https://chilledsites.com/docs/api#delete-website
+    stated: '"Permanently delete a website. This action cannot be undone. All code, deployments, and data will be lost."'
+  - operation: POST /v1/websites/{website_id}/deploy
+    reversal: none documented (no undeploy / unpublish endpoint)
+    window: null
+    docs: https://chilledsites.com/docs/api#deploy-website
+  - operation: POST /v1/generate, POST /v1/generate/image, POST /v1/generate/video, POST /v1/ads/*
+    reversal: none — tokens are debited on completion ("billed on actual usage"); no refund or credit-back operation is documented
+    window: null
+    docs: https://chilledsites.com/for-agents
+  - operation: PUT /v1/websites/{website_id}
+    reversal: none — no version history or restore endpoint; an agent can re-PUT previously fetched code from GET /v1/websites/{id} but the provider documents no rollback
+    window: null
+    docs: https://chilledsites.com/docs/api#update-website
+  - operation: POST /v1/checkout/email
+    reversal: n/a — sends an email; a human completes payment on a hosted page
+    window: null
+    docs: https://chilledsites.com/for-agents
+  note: >-
+    The provider explicitly documents irreversibility (delete) and documents no reversal operation or window
+    for anything else. Graded none, not na: the API has a real write surface. The guardrails the provider does
+    publish are pre-action (balance check, human-held payment card, daily caps), not post-action.
+dry_run: none documented
+pagination:
+  style: none
+  note: GET /v1/websites returns the full websites[] array; no page/cursor/limit parameters are documented.
+field_expansion: none
+sparse_fields: none
+metadata:
+  websites: free-form metadata object on create/update (e.g. tags[], pageCount)
+request_id: none — no request/correlation id header is documented; meta.timestamp is the only per-response marker
+rate_limits:
+  headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset]
+  exhaustion: 429 RATE_LIMIT_EXCEEDED
+  ref: rate-limits/chilledsites-com-rate-limits.yml
+async_operations:
+  video: 'generate_video / generate_ad_video return an operation id; the MCP tool descriptions say videos take 2-5 minutes. The polling endpoint is not documented publicly.'
+  generation: 'website generation is synchronous per the docs (30-90 seconds per request, /developers FAQ)'
+agent_billing_flow:
+  name: 402 email-checkout
+  steps:
+  - paid call -> 402 INSUFFICIENT_TOKENS with tokens_required, tokens_available, checkout_url, email_checkout, balance_endpoint
+  - agent POSTs /v1/checkout/email {"tokens_needed": n}; the provider emails a hosted Revolut payment link to the account's registered address only (cannot be redirected; max 3/day)
+  - human pays; agent polls GET /v1/user/tokens; agent retries the original call
+  docs: https://chilledsites.com/for-agents
+  note: A provider-designed human-in-the-loop payment rail. Not x402, not AP2, not UCP/ACP — a 402 with a JSON body; see errors/ for the fields.
+cors: 'access-control-allow-origin: *; headers x-api-key, x-api-secret, content-type, authorization; methods GET, POST, PUT, DELETE, OPTIONS (observed). OPTIONS preflight itself returned HTTP 500 text/plain "Internal Server Error" on /v1/websites during the probe.'

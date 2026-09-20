@@ -1,0 +1,63 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "ChilledSites",
+  "description": "AI website, image, and video generation. Build, edit, and deploy websites from text prompts. Supports landing pages, PWAs, portfolios, and dashboards.",
+  "url": "https://api.chilledsites.com/functions/v1/a2a-agent",
+  "provider": {
+    "organization": "ChilledSites",
+    "url": "https://chilledsites.com"
+  },
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "authentication": {
+    "schemes": ["apiKey"],
+    "credentials": {
+      "signup_url": "https://api.chilledsites.com/functions/v1/agent-signup",
+      "headers": ["X-API-Key", "X-API-Secret"]
+    }
+  },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    {
+      "id": "generate-website",
+      "name": "Generate Website",
+      "description": "Generate a complete website from a text prompt. Supports websites, landing pages, PWAs, portfolios, and dashboards.",
+      "tags": ["website", "generation", "ai", "landing-page"],
+      "examples": ["Build a portfolio website for a photographer", "Create a landing page for my SaaS product"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    },
+    {
+      "id": "edit-website",
+      "name": "Edit Website",
+      "description": "Update an existing website's HTML, CSS, or JavaScript code.",
+      "tags": ["website", "edit", "update", "code"],
+      "examples": ["Change the hero text to 'Welcome to My Site'", "Update the colour scheme to blue"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    },
+    {
+      "id": "deploy-website",
+      "name": "Deploy Website",
+      "description": "Deploy a website to a live .chilledsites.com URL or custom domain.",
+      "tags": ["deploy", "hosting", "publish"],
+      "examples": ["Deploy my site to my-business.chilledsites.com"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    },
+    {
+      "id": "generate-media",
+      "name": "Generate Media",
+      "description": "Generate AI images (Gemini, Imagen 3, DALL-E 3) and videos (Veo 3.1) from text prompts.",
+      "tags": ["image", "video", "media", "ai"],
+      "examples": ["Generate a hero image for a tech startup", "Create a 10-second product demo video"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    }
+  ]
+}

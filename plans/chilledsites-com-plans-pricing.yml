@@ -1,0 +1,65 @@
+generated: '2026-09-19'
+method: searched
+source: https://chilledsites.com/llms.txt
+sources:
+- url: https://chilledsites.com/llms.txt
+  note: Pricing table, "Last updated 2026-06-30". Same table in https://chilledsites.com/context.md.
+- url: https://chilledsites.com/for-agents
+  note: PAYG packs and the no-subscription API path; currencies GBP, USD, EUR, AED, SAR.
+- url: https://chilledsites.com/developers
+  note: FAQ — "no separate API pricing tier"; API calls consume the same tokens as the web UI.
+- url: https://chilledsites.com/pricing
+  note: The human pricing page is a client-rendered React shell (5.4 KB HTML, no prices in the served markup), so the machine-readable source is llms.txt / context.md.
+currency: GBP
+plan_count: 3
+plans:
+- name: Free
+  price: 0
+  currency: GBP
+  billing_period: none
+  sites: 1
+  build_tokens_on_signup: null
+  monthly_tokens: null
+  includes: [remix gallery templates, basic editing, .chilledsites.com subdomain]
+  api_access: 'Key issuance is possible, but every API call consumes tokens and "There is no free tier, every API call consumes tokens" (/developers FAQ); an agent-signup account "starts at zero tokens".'
+- name: Pro
+  price: 9
+  currency: GBP
+  billing_period: month
+  sites: 1
+  build_tokens_on_signup: 120000
+  monthly_tokens: 5000
+  includes: [AI generation, AI editing, multi-page, chatbot, reviews, analytics, contact forms, SEO tools, custom domain, remove branding, data export]
+- name: Pro+
+  price: 18
+  currency: GBP
+  billing_period: month
+  sites: 3
+  build_tokens_on_signup: 300000
+  monthly_tokens: 15000
+  includes: [everything in Pro, 3 live sites, priority support]
+payg_token_packs:
+  note: One-off, never expire; the API path can run on packs alone with no subscription (/for-agents).
+  currencies: [GBP, USD, EUR, AED, SAR]
+  packs:
+  - {name: Starter, price: 8, currency: GBP}
+  - {name: Creator, price: 12, currency: GBP}
+  - {name: Pro, price: 20, currency: GBP}
+  - {name: Enterprise, price: 50, currency: GBP}
+  token_amounts: not published per pack
+one_off_services:
+- {name: Done-for-You, price: 299, currency: GBP, url: https://chilledsites.com/done-for-you, note: white-glove site build}
+usage_billing:
+  unit: tokens
+  balance_endpoint: GET /v1/user/tokens
+  exhaustion: 402 INSUFFICIENT_TOKENS with checkout_url and email_checkout (see conventions/ and errors/)
+  payment_processor: Revolut hosted checkout (context.md, /for-agents)
+overage: none — buy a PAYG pack; subscriptions do not carry overage billing
+enterprise: no enterprise plan on the pricing table; /docs/api's rate-limit table names an "Enterprise" tier with unlimited limits, and /developers says "contact support" for higher limits
+disagreements:
+- source: https://chilledsites.com/agent-meta.json
+  says: 'Pro £29/YEAR (3 sites, 50K tokens); Pro+ £49/YEAR (10 sites, 150K tokens)'
+  note: Stale schema.org offers that contradict the 2026-06-30 table; creator is given as "Thrive Venture Labs" while every other page credits p0stman.
+- source: https://chilledsites.com/terms-of-service
+  says: '"All subscriptions are annual and payments are non-refundable" and "Token credits do not roll over between billing periods"'
+  note: Contradicts the monthly "cancel anytime" plans and the "tokens never expire" PAYG statement on llms.txt / context.md / for-agents. The ToS (2026-03-02) appears older than the pricing model.

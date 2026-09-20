@@ -1,0 +1,38 @@
+generated: '2026-09-19'
+method: searched
+source: https://chilledsites.com/agents.md
+skills:
+- file: chilledsites-com-agents.md
+  name: chilledsites-agent-instructions
+  author: provider
+  source: https://chilledsites.com/agents.md
+  also_at: https://chilledsites.com/AGENTS.md (byte-identical)
+  fetched: '2026-09-19'
+  http_status: 200
+  content_type: text/markdown; charset=utf-8
+  bytes: 4275
+  verbatim: true
+  description: >-
+    The provider's own agent operating instructions — authentication (two-header key pair, self-signup),
+    the 13-tool MCP table with required params, REST base + three curl flows (generate, deploy, image),
+    error codes including the machine-readable 402 flow, rate limits, token costs, citation format and
+    indexing preferences.
+  api: https://api.chilledsites.com/functions/v1/api-v1
+  operations:
+  - POST /v1/generate
+  - POST /v1/websites/{id}/deploy
+  - POST /v1/generate/image
+  - POST /v1/checkout/email
+  - GET /v1/user/tokens
+  grounding_note: >-
+    Operations are the REST paths the document itself names; the provider publishes no OpenAPI, so there are
+    no operationIds to cite. No API Evangelist-authored skills were generated for the same reason — there is
+    no spec to ground them in, and the provider already ships its own.
+not_saved:
+- url: https://chilledsites.com/skill.md
+  status: 200
+  reason: >-
+    Advertised everywhere (llms.txt "Agent setup guide (written for agents)", /for-agents "Read
+    https://chilledsites.com/skill.md and follow it", /developer-api, robots.txt, agent-meta.json
+    agent.skillFile) but the served body is the platform's tenant-not-found page: "This site isn't live yet —
+    The website SKILL.md hasn't been published, or may have been taken down." A soft-404; nothing to save.
