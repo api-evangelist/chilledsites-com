@@ -22,6 +22,20 @@ modified: '2026-09-19'
 tags:
 - Company
 - Website Builder
+- Artificial Intelligence
+- No-Code
+- Web Hosting
+- Image-Generation
+- Video Generation
+- Advertising
+- MCP
+- Agents
+- A2A
+- Small Business
+- United Kingdom
+tags_raw:
+- Company
+- Website Builder
 - AI
 - No Code
 - Web Hosting
@@ -48,6 +62,14 @@ apis:
   baseURL: https://api.chilledsites.com/functions/v1/api-v1
   position: Producing
   tags:
+  - Website Builder
+  - Artificial Intelligence
+  - Deployment
+  - Image-Generation
+  - Video Generation
+  - Advertising
+  - Agents
+  tags_raw:
   - Website Builder
   - AI
   - Deployment
