@@ -63,3 +63,29 @@ disagreements:
 - source: https://chilledsites.com/terms-of-service
   says: '"All subscriptions are annual and payments are non-refundable" and "Token credits do not roll over between billing periods"'
   note: Contradicts the monthly "cancel anytime" plans and the "tokens never expire" PAYG statement on llms.txt / context.md / for-agents. The ToS (2026-03-02) appears older than the pricing model.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - subscription
+  units: []
+  plans:
+  - name: Free
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods: []
+  - name: Pro
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods: []
+  - name: Pro+
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods: []
